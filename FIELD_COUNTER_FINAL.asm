@@ -1,14 +1,24 @@
 ;**********************************************************************
-;   This file is a basic code template for assembly code generation   *
-;   on the PICmicro PIC16F876. This file contains the basic code      *
-;   building blocks to build upon.                                    *  
+;                                                                     *
+;    Filename:	    FIELD_COUNTER_FINAL.asm                           *
+;    Date:          2 June 1998                                       *
+;    File Version:  3.0                                               *
+;                                                                     *
+;    Author:        Martin Boyd                                       *
+;    Company:                                                         *
+;                                                                     * 
+;                                                                     *
+;**********************************************************************
+;   INFORMATION                                                       *
+;                                                                     *
+;   Using MICROCHIP PIC template generated for PICmicro PIC16F876     *
 ;                                                                     *
 ;   If interrupts are not used all code presented between the ORG     *
 ;   0x004 directive and the label main can be removed. In addition    *
 ;   the variable assignments for 'w_temp' and 'status_temp' can       *
 ;   be removed.                                                       *                         
 ;                                                                     *
-;   Refer to the MPASM User's Guide for additional  information on     *
+;   Refer to the MPASM User's Guide for additional  information on    *
 ;   features of the assembler (Document DS33014).                     *
 ;                                                                     *
 ;   Refer to the respective PICmicro data sheet for additional        *
@@ -16,28 +26,7 @@
 ;                                                                     *
 ;   Template file assembled with MPLAB V4.00 and MPASM V2.20.00.      *
 ;                                                                     *
-;**********************************************************************
-;                                                                     *
-;    Filename:	    xxx.asm                                           *
-;    Date:                                                            *
-;    File Version:                                                    *
-;                                                                     *
-;    Author:                                                          *
-;    Company:                                                         *
-;                                                                     * 
-;                                                                     *
-;**********************************************************************
-;                                                                     *
-;    Files required:                                                  *
-;                                                                     *
-;                                                                     *
-;                                                                     *
-;**********************************************************************
-;                                                                     *
-;    Notes:  things to remember                                       *
-;   															      *
-;   *---WHEN DOING EEPROM ROUTINE DONT FORGET TO CHANGE BANK TO 0     *
-;   *---                                                              *
+;   USING MPLAB V 6.1 and Micorchip MPLAB ICD2                        *
 ;                                                                     *
 ;**********************************************************************
 
@@ -64,7 +53,7 @@
 VIDSTB		EQU	0		;6450 VIDEO STROBE	   	PORTA, 0, OUTPUT  0	LOW
 BUSY		EQU	1		;VIDEO BUSY INDICATOR	   	PORTA, 1, INPUT   1	LOW
 RAMCS		EQU	2		;EEPROM CHIP SELECT	   	PORTA, 2, OUTPUT  0	LOW
-KEY_UP          EQU	3		;KEYPAD, MENU UP	   	PORTA, 3, INPUT   1	HIGH
+KEY_UP      EQU	3		;KEYPAD, MENU UP	   	PORTA, 3, INPUT   1	HIGH
 KEY_DOWN	EQU	4		;KEYPAD, MENU DOWN	   	PORTA, 4, INPUT   1	HIGH
 KEY_ENTER	EQU	5		;KEYPAD, ENTER		   	PORTA, 5, INPUT   1	HIGH
 
@@ -84,7 +73,7 @@ CLOCK		EQU	3		;SERIAL CLOCK 			PORTC, 3, OUTPUT  0	HIGH
 DI		EQU	4		;SERIAL DATA INPUT		PORTC, 4, INPUT	  1	TRISTATE
 DO		EQU	5		;SERIAL DATA OUTPUT		PORTC, 5, OUTPUT  0	HIGH
 TXD		EQU	6		;SERIAL TXMT TO RS-232		PORTC, 6, OUTPUT  0	HIGH (?)
-RXD		EQU     7		;SERIAL RXCV FROM RS-232	PORTC, 7, INPUT   1	HIGH (?)
+RXD		EQU 7		;SERIAL RXCV FROM RS-232	PORTC, 7, INPUT   1	HIGH (?)
 
 
 
@@ -131,25 +120,25 @@ OEDETECT	EQU 0X31		;X)		THIS WILL STORE ODD OR EVEN FIELD BIT IN ITS 0 BIT
 ;** GENERAL DATA AND ADDRESS registers:
 ;** NOTE:  These registers are used for the PIC Data EEPROM, for the Serial EEPROM (93LC56)
 ;** and for the serial port routine.
-DATA_BYTE	EQU	0x32		;18)	DATA FOR EEPROM
-DATA_ADDR	EQU	0x33		;19)	ADDRESS FOR EEPROM.  (0 TO FF ADDRESS LOCATIONS)
+DATA_BYTE		EQU	0x32		;18)	DATA FOR EEPROM
+DATA_ADDR		EQU	0x33		;19)	ADDRESS FOR EEPROM.  (0 TO FF ADDRESS LOCATIONS)
 
 ;** EEPROM registers:
 DATA_ADDR_END	EQU	0x34		;20)	END ADDRESS FOR EEPROM (0 TO FF)
-EE_CLOCKS	EQU	0x35		;21)	USED BY THE SERIAL EEPROM TO DETERMINE CLOCK COUNT
+EE_CLOCKS		EQU	0x35		;21)	USED BY THE SERIAL EEPROM TO DETERMINE CLOCK COUNT
 
 
-P_DIR		EQU	0x36		;22)	USED TO INDICATE DIRECTION OF MEMORY 2 OUTPUT WRITE
+P_DIR			EQU	0x36		;22)	USED TO INDICATE DIRECTION OF MEMORY 2 OUTPUT WRITE
 
 ;** MISC registers:
-DELAY_1		EQU 	0X37		;23) 	DELAY 1 REG		\
-DELAY_2		EQU	0X38		;23) 	DEALY 2 REG		 |
-DELAY_0		EQU	0X39		;24)	DELAY 0 REG		 |------ALL OF THESE REGS ARE USED IN DELAY ROUTINE
-DELAY_COUNT0	EQU 	0X3A		;25)	DELAY COUNTERS		 |------THATS 3 STAGE DELAY WITH PRECISION OF 200nS		
+DELAY_1			EQU 0X37		;23) 	DELAY 1 REG		\
+DELAY_2			EQU	0X38		;23) 	DEALY 2 REG		 |
+DELAY_0			EQU	0X39		;24)	DELAY 0 REG		 |------ALL OF THESE REGS ARE USED IN DELAY ROUTINE
+DELAY_COUNT0	EQU 0X3A		;25)	DELAY COUNTERS		 |------THATS 3 STAGE DELAY WITH PRECISION OF 200nS		
 DELAY_COUNT1	EQU	0X3B		;26)	DELAY COUNTERS		 |-------CHECK OUR DELAY ROUTINE FOR MORE INFO
 DELAY_COUNT2	EQU	0X3C		;27)	DELAY COUNTERS		/	 
 GENERAL_COUNT	EQU	0x3D		;28)	GENERAL COUNT REGISTER
-INTRO_COUNT	EQU	0x3E		;29)	INTRO ROUTINE COUNTER
+INTRO_COUNT		EQU	0x3E		;29)	INTRO ROUTINE COUNTER
 GENERAL_COUNT2	EQU	0x3F		;30)    VERY TEMPORARY
 
 STATE_DETECT	EQU	0x40		;31)	THIS IS STAGE DETECT REG WHICH WILL HOLD THE 
@@ -162,26 +151,26 @@ KEY_DETECT_C	EQU	0X41		;32)    AFTER 1mS DELAY CHECK  IF BOTH ARE SAME THATS CON
 								;		0000 0000
 								;		00ED U000
 								;		0X08==UP KEY    0X10==DONW KEY    OX20==ENTER KEY ,ELSE NO KEY==SAME STAGE
-KEY_DETECT	EQU 0X42		; 		FIRST TIME CHECK				
+KEY_DETECT		EQU 0X42		; 		FIRST TIME CHECK				
 
 ;** UART registers:
-RC_DATA		EQU	0X43		; THIS REG HOLDS BYTE FROM RECREG REG
-RC_FLAG		EQU	0X44		; THIS IS A FLAG REG WHEN REG IS FULL SET IT,WHEN ITS EMPTY CLEAR IT
-					; I MA USING ONLY 0 BIT TO TEST IT
-CURSOR_COL	EQU 0X45		; THIS IS A WORDPROSESSOR NAVIGATION CURSOR---24 COLUMN
-					; THIS WILL KEEP TRACK OF CURSOR IN MEMORY,HYPERTERMINAL AND NTSC
-CURSOR_LINE	EQU 0X46		; LINE CURSUR---6 LINE 
-					; SO HERE WE ARE IMPLEMENTING 24*6 MATRIX 		
-HYPE_TEMP	EQU	0X47		; TEMP REG	
+RC_DATA			EQU	0X43		; THIS REG HOLDS BYTE FROM RECREG REG
+RC_FLAG			EQU	0X44		; THIS IS A FLAG REG WHEN REG IS FULL SET IT,WHEN ITS EMPTY CLEAR IT
+								; I MA USING ONLY 0 BIT TO TEST IT
+CURSOR_COL		EQU 0X45		; THIS IS A WORDPROSESSOR NAVIGATION CURSOR---24 COLUMN
+								; THIS WILL KEEP TRACK OF CURSOR IN MEMORY,HYPERTERMINAL AND NTSC
+CURSOR_LINE		EQU 0X46		; LINE CURSUR---6 LINE 
+								; SO HERE WE ARE IMPLEMENTING 24*6 MATRIX 		
+HYPE_TEMP		EQU	0X47		; TEMP REG	
 GENERAL_TEMP	EQU	0X48			
-LOOKUP_REG	EQU	0X49		; REGISTER TO HOLD NEC LOOKUP VARIABLE	
+LOOKUP_REG		EQU	0X49		; REGISTER TO HOLD NEC LOOKUP VARIABLE	
 SEC_INC_DETECT	EQU 0X4A		; THIS REG DETECTS THE SECOND INCREMENT AFTER 1-60 FRAMES IS DONE
 ;*******************************************************************************************************
 ;*******************************************************************************************************
 ;**  DEFINE CONSTANTS
 
-KEY_MENU	EQU	2		;KEYPRESS 'MENU DISPLAYED' DATA BIT
-KEY_VALID	EQU	3		;KEYPRESS 'REGISTER VALID' DATA BIT
+KEY_MENU	EQU	2			;KEYPRESS 'MENU DISPLAYED' DATA BIT
+KEY_VALID	EQU	3			;KEYPRESS 'REGISTER VALID' DATA BIT
 KEYDELAY	EQU	0x1F		;BUTTON REACTION DELAY
 
 ;** SERIAL EEPROM (93LC56) CONSTANTS (OPCODES)
@@ -216,7 +205,7 @@ V_BANK0		EQU	0xFC		;6450 BANK 0 SELECT
 V_BANK1		EQU	0xFE		;6450 BANK 1 SELECT
 V_MODE		EQU	0xF1		;6450 VIDEO MODE - CURRENTLY EXTERNAL / NTSC
 V_COLOR		EQU	0xC2		;6450 VIDEO COLOR - CURRENTLY SET FOR NO BACKGROUND
-					;  WITH A BLACK BACKGROUND COLOR (IF USED)
+							;     WITH A BLACK BACKGROUND COLOR (IF USED)
 V_DISPLAY	EQU	0xE9		;6450 DISPLAY ON/OFF, BLINK ON/OFF
 V_CHARLINE	EQU	0x94		;6450 LINE THAT HRS MNS SNDS FLDS IS DISPLAYED AT
 V_NUMLINE	EQU	0x95		;6450 LINE THAT THE ACTUAL NUMBERS IS DISPLAYED AT
@@ -275,9 +264,6 @@ BS		EQU 2			;BACKSPACE BIT =2 OF RC_FLAG
 ;*******************************************************************************************************
 ;*******************************************************************************************************
 ;*******************************************************************************************************
-
-
-
 
 
 
@@ -422,7 +408,7 @@ SETUP
 STARTUP		
 		CLRW						
 		MOVWF 	DELAY_1			;		\WAIT FOR 1 SEC		
-		CLRW				;		 |
+		CLRW					;		 |
 		MOVWF 	DELAY_2			;		 |
 		MOVLW 	0X13			;		 |STARTUP DELAY			
 		MOVWF 	DELAY_0			;		 |FOR EVERYTHING TO GET SETTLED DOWN
@@ -430,7 +416,7 @@ STARTUP
 	
 	
 		CLRW
-		MOVWF	TXREG		; SEND DUMY CHARACTER THIS WILL SET THE TXIF FLASH SET AFTER TRANSMISSION
+		MOVWF	TXREG			; SEND DUMY CHARACTER THIS WILL SET THE TXIF FLASH SET AFTER TRANSMISSION
 		CALL 	VID_INIT		; ACTIVATE THE NEC VIDEO  ;********STACK-3***********
 		CALL	INTRO			; DISPLAY INTRO TEXT
 	
@@ -500,7 +486,7 @@ STAGE_02
 		CALL CLEAR_TEXT?			; ASKS IF YOU WANT TO DELETE TEXT FROM EE PROM EXTERNAL
 		GOTO MAIN
 STAGE_03						
-		CALL VGA_LINE_COUNTER			; VGA TRIGER COUNTER;; THIS STAGE IS NOT IMPLEMENTED			
+		CALL VGA_LINE_COUNTER		; VGA TRIGER COUNTER;; THIS STAGE IS NOT IMPLEMENTED			
 		GOTO MAIN
 STAGE_04
 		CALL INFRARED_TXRX		  	;INFRARED;; THIS STAGE IS NOT IMPLEMENTED
@@ -1211,11 +1197,14 @@ ERASE_O	MOVLW	0XB3		; WHEN YOU WRITE "E" YOU NEED TO ERASE "O"
 		
 WRITE_OE_DONE
 		RETURN		
-;****************************************;*************		
-;****************************************;*************
+;****************************************
+;*************		
+;****************************************
+;*************
 ;						COUNTER ROUTINE
 ; THIS ROUTINE DOES IT ALL COUNT FIELDS,SECS,MINS,HRS
-;****************************************;*************		
+;****************************************
+;*************		
 ;****************************************			
 							; THIS ROUTINE WILL WRITE NUMBER OF FILEDS	 FROM 0 TO 59 AFTER 59 WILL RESET TO 00
 							; WHEN THE COUNTER FIRST STARTS IT'S FIELD 00 BUT IF I INCREMENT IT IT WILL PRINT 01
@@ -2787,11 +2776,11 @@ INFRARED_TXRX
        
         MOVLW	0X96	   	; MOV A8 MEMORY LOCATION WHEERE MESSEGE IS SITTING
         CALL  	VID_WRITE	; DISPLAY MESSEGE ON THE SCREEN
-        MOVLW	0XAA		; NOT APPLICABEL
+        MOVLW	0XAA		; NOT APPLICABLE
         CALL	VID_WRITE	; THIS STAGE IS UNDER CONSTRUCTION
         MOVLW	0X1E		;-------\
         CALL	VID_WRITE	;		|
-        MOVLW	0X6D		;		|N/A   MESSEGE
+        MOVLW	0X6D		;		|N/A   MESSAGE
         CALL	VID_WRITE	;		|
         MOVLW	0X11		;		|
         CALL	VID_WRITE	;		/
@@ -2835,7 +2824,7 @@ CLEAR_TEXT
  		CALL  	VID_ERAL	; THIS IS GOING TO ERASE ALL THE GARBAGE CHARACTERS AND PUTS CURSUR AT (0,0) LOCATION
         MOVLW	0XB0	   	; MOV A8 MEMORY LOCATION WHEERE MESSEGE IS SITTING
         CALL  	EE_2_NEC	; DISPLAY MESSEGE ON THE SCREEN
-       MOVLW	0X0E
+       	MOVLW	0X0E
         CALL	VID_WRITE	;...
         MOVLW	0X0E
         CALL	VID_WRITE
@@ -2955,13 +2944,13 @@ VGA_TRIG
 
 
 ; THIS ARE TEST ROUTINES 
-; ITS NOT INCLUDED IN THE FINALA PROGRAM
+; ITS NOT INCLUDED IN THE FINAL PROGRAM
 ; I AM JUST USING THIS PAGE AS SCRATCH PAD
 
 
 		
 		
-;			MOVF DATA_ADDR,W					
+;		MOVF DATA_ADDR,W					
 ;		ANDLW 0X0F			; RIGHT NIBLE
 ;		ADDLW 0X40					
 ;		CALL	UART_SEND		
